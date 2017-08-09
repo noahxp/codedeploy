@@ -1,7 +1,8 @@
 <?php
-echo "v4<br>\n";
-echo gethostname() . "<br>\n";
-echo gethostbyname(gethostname()) . "<br>\n";
-echo "<br><hr>\n";
-phpinfo();
+echo "v1   <br>";
+echo gethostname() . "   <br>";
+echo gethostbyname(gethostname()) . "   <br>";
+$date = new DateTime('2000-01-01');
+echo $date->format('Y-m-d H:i:s') . "  <br>";
+echo "\n";
 ?>

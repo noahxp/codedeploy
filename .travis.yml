@@ -2,17 +2,41 @@ sudo: required
 
 language: php
 php:
-  - '7.1.6'
-
-# services:
-#   - docker
+- '7.1.9'
 
 branches:
   only:
-    - master
+  - master
 
 # travis runtime environment from here or settings. : https://docs.travis-ci.com/user/environment-variables/
 env:
+  global:
+  - ZIP_FILE="php-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
+
+  # travis-ci secure doc : https://docs.travis-ci.com/user/encryption-keys/
+  # before install travis , first install ruby & gem
+  # $ gem install travis
+  # $ travis encrypt SOMEVAR="secretvalue"
+
+  # AWS_ACCESS_KEY_ID_DEV
+  - secure: ""
+  # AWS_SECRET_ACCESS_KEY_DEV
+  - secure: ""
+  # AWS_ACCESS_KEY_ID_STG
+  - secure: ""
+  # AWS_SECRET_ACCESS_KEY_STG
+  - secure: ""
+  # AWS_ACCESS_KEY_ID_PROD , value : AKI....QMQ
+  - secure: "3RBzRWoij7k6ucgDkm1mD/XkbGA2/zF9IQ3nNkyGaj38XibX+UVZ45NBduaEVdsnl8+NyzDOR9gmtIctMJeqjThcgNtgU4koyhDKDVZccvSiWkkwpkb/WhJkX3UmdRBpZ8mvNXDNkCZLdwNBLC/v28MajE6qEPPBkuNKXbLvfkOkipJbgaukqsiAqgUJtEJ0idTKxR54wiGXYkJ9mrlpE00krIrviDwuCvq9i49/0UX+FHVH2r5WD8pgpUDKHY8Z+IGW/bsq30FffdscNKXwzAqZ1wftV6Pq/5V+tV7QrYafjlQTkQ0W2ml94rFONoEMGwmB3V8JcqEA93gah3T41Sri+uBnIH8jeT7iPjBDBhpewzLDdlKUS+rX9AfoeWYlkiMJqVdak8fhVNEXeQmezWem6EpKUHim5RpMsdj8p6aPV1I85pKAAmI43XlwQHfCL8Bj8xTm3VzB/3G51PA57boMcxjuZ/EANl3Bk+lL052V3UaBiTf41oFZ/mWKPS/19oEB6x9KyOwvzWKQmYZWH+7AvAdI9Y0Cfm0qqRugwY/5icNpvrwmbcxMBPq7uEqvG0XgM+TxG5QwiyPduSwnnTvKn1TLvGbSsieYIEELWXNYtkAtPfsytKhlEk3wrU+mmm07r4g21t1ukktVlKzAWLoS204Vuhja5h2kmgzMUDs="
+  # AWS_SECRET_ACCESS_KEY_PROD
+  - secure: "MOykCm0+gwGZZwXjeiozzs7RB2UkVMmtAdpdMuVeM8fG1QUHVvAoqki6Vim57gGffmUiRHGsDlEQFP9fVrbsx+IE2HwYy7lICAdB8Y23KpNPnSargHqJfQc6GV9qlWuk13NzkpBCwVVh/UXkz3PS/7pFTuwZTI/XzP+qpUPkxqxEmJWGeobWA8VFB5s/uleZoaueuMIRoeLI9AR0rCYYmbHBCfvVRxFcK1RnN1N0W/jDyhwk2+hf4Xtz1eBAYtwr+ml3NOXvskRxidaotsVz7TVbqGdY4eXliRoGmf3T4YW37Muzsv+KuHufl7tjlcLa99pwCgzi+lQ2+CrrrLgh1fEwVhy04tarbQNLqgSiix7FJCyNHfd7mctyiquU82dXr/ONFBQ9nYK6cBgNHlGNbNUVGNqI/Xp3xMttuXGT6UnksN4oE18eAL7iA02UM4iOu6PnY73KJLidOxvc5X/XgeeH9FUHCE4Zm6nYGthfAXVyb8vQ3gKc/uM+4mpdE8FpA1Uk32fn1IAmpgW3khawkEXc0f6ysgsccvAiD1SydCEkl3lEeGt43xUcnHcEosbj+iS9EwhdGinsWseeOIsGIV8jnH6c+wewErDvCxr5CAJkiSf5QlKOilYksj1fYFsn7xmR68SUP2PWy0Q4lO5eqEu2dR1fiLhWC/5UrMLWsNw="
+
+  # global variables
+  - AWS_ACCESS_KEY_ID=''
+  - AWS_SECRET_ACCESS_KEY=''
+  - AWS_REGION='ap-northeast-1'
+  - CODEDEPLOY_APP_NAME=''
+  - CODEDEPLOY_GROUP=''
 
 
 # notification - https://docs.travis-ci.com/user/notifications
@@ -23,19 +47,22 @@ env:
 #       - other@example.com
 #     on_success: never # default: change
 #     on_failure: always # default: always
+# integration to slack , setup on slack travis-ci app
 notifications:
-  email: false
+  email:
+    on_failure: always
+    on_success: never
   slack:
     rooms:
-      - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}"
-    template:
-      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
-
+    - secure: "OWaHJYnY7E/gcAxgqHUl5wqwc6oi1su77T2ixxmTl8hvO+fH66MQN9Mm1Ay6d5oaQqX4BNic9GdS7FI8h/osyHAf6NNhFZJleIzm9h3vWjlNh9ADwGbWRskue+6SyKY2vdB5HPiwstGUQoZ8/51wR19T43DwQ15dyCQKxg+WwK39+D3ps933wvFJsCQ+2RSLdImIN8B1CjpIbWxStBocZOprqxThAlYfupvMYrrRDt7mlVeMAnvXE4TmMfHdYXtKe9hc/mEfbCryL/CxN8e2JR1U2ropdkfmDOavPoc4PGtf+C3E5pLCm/rNx6Ldy2Y97qMSv6AuyHCMm8ie495wscRB2OmW7JIwRsFRg0jrJcm5CH/cS/Oy2wnmzPElQ50GcESh84E9HSV5tXF8iARHERVz1DF3PbJRRAd/KEyWcU+J/wbub3XX0PAsWBHix4BnvNgvwMbb0/Ie7UaCeZMzF0DQVopLd51DNIuTTmP/V9kpbEFgok2qatUrb2FiRNyRQVPYwQx8mRlS9sgGk7tChSTHsrqcS6/apmKUPAbI4NBPbB0BZBDlC/rHDr3iq77ht8DUcQnwJpXedIhHg7FAcHmRRuzC7+9gBiS/1g9/HjGkH46TaaR4P71s+BoOFVYfc2NTTAzqtxy6Fh1OWktK2WwdVEEk+mXEm0OQa9Cl1T8="
 
 cache:
   directories:
-    - $COMPOSER_CACHE_DIR
-    - $HOME/.composer/cache
+  - $COMPOSER_CACHE_DIR
+  - $HOME/.composer/cache
+
+
+
 
 # build lifecycle - https://docs.travis-ci.com/user/customizing-the-build/
 # (OPTIONAL) Install apt addons
@@ -53,33 +80,62 @@ cache:
 
 # set -e : when error stop build.
 before_install:
-  - set -e
+- set -e
+- echo `date +"%Y-%m-%d %H:%M:%S"`
+- echo $TRAVIS_BRANCH
+- if [[ $TRAVIS_BRANCH == "dev" ]]; then
+    AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_DEV;
+    AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_DEV;
+    S3_BUCKET='';
+    CODEDEPLOY_APP='';
+    CODEDEPLOY_GROUP='';
+  fi
+- if [[ $TRAVIS_BRANCH == "staging" ]]; then
+    AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_STG;
+    AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_STG;
+    S3_BUCKET='';
+    CODEDEPLOY_APP='';
+    CODEDEPLOY_GROUP='';
+  fi
+- if [[ $TRAVIS_BRANCH == "master" ]]; then
+    AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD;
+    AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD;
+    S3_BUCKET='afgsfhdyur5joi868682333';
+    CODEDEPLOY_APP='a1-EC2-CodeDeploy';
+    CODEDEPLOY_GROUP='ec2';
+  fi
 
 
 # put testing scripts here
 script:
-  - echo 'script step...'
+- echo 'script step...'
+
+before_deploy:
+- cd "$TRAVIS_BUILD_DIR";
+  mkdir "$TRAVIS_BUILD_DIR/zip";
+  zip -r "$TRAVIS_BUILD_DIR/zip/$ZIP_FILE" *
+
 
 deploy:
-  - provider: S3
-    access_key_id: "$AWS_ACCESS_KEY_ID"
-    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$REGION"
-    local_dir: "$TRAVIS_BUILD_DIR/s3"
-    bucket: $S3_BUCKET
-    upload-dir: "$S3_FOLDER"
-    skip_cleanup: true
-    on:
-      all_branches: true
+- provider: S3
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: $AWS_REGION
+  local_dir: $TRAVIS_BUILD_DIR/zip
+  bucket: $S3_BUCKET
+  skip_cleanup: true
+  on:
+    all_branches: true
 
-  - provider: codedeploy
-    access_key_id: "$AWS_ACCESS_KEY_ID"
-    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$REGION"
-    bucket: "$S3_BUCKET"
-    key: $S3_FOLDER/php-ec2-web-$ENV_NAME-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip
-    bundle_type: zip
-    application: "$CODEDEPLOY_APP"
-    deployment_group: "$CODEDEPLOY_GROUP"
-    on:
-      all_branches: true
+- provider: codedeploy
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  region: $AWS_REGION
+  bucket: $S3_BUCKET
+  key: $ZIP_FILE
+  bundle_type: zip
+  application: $CODEDEPLOY_APP
+  deployment_group: $CODEDEPLOY_GROUP
+  wait_until_deployed: true
+  on:
+    all_branches: true

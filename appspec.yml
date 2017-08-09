@@ -1,8 +1,8 @@
 version: 0.0
 os: linux
 files:
-  - source: src
-    destination: /var/www/html
+- source: src
+  destination: /var/www/html
 
 # permissions:
 #   - object: /opt/tomcat/bin
@@ -15,31 +15,29 @@ files:
 
 hooks:
   ApplicationStop:
-    - location: Scripts/SuspandedScaling.sh
-      timeout: 60
-      runas: root
-    - location: Scripts/EC2EnterStandby.sh
-      timeout: 180
-      runas: root
+  - location: script/suspend-scaling.sh
+    timeout: 60
+    runas: root
+
+  - location: script/stop-service.sh
+    timeout: 180
+    runas: root
 
   BeforeInstall:
-    - location: Scripts/StopDaemon.sh
-      timeout: 180
-    - location: Scripts/EarseApp.sh
-      timeout: 180
-
-  AfterInstall:
+  - location: script/earse-application.sh
+    timeout: 60
+    runas: root
 
   ApplicationStart:
-    - location: Scripts/StartService.sh
-      timeout: 300
+  - location: script/start-service.sh
+    timeout: 180
+    runas: root
 
   ValidateService:
-    - location: Scripts/VerfiyService.sh
-      timeout: 60
-    - location: Scripts/EC2ExitStandby.sh
-      timeout: 60
-      runas: root
-    - location: Scripts/ResumeScaling.sh
-      timeout: 60
-      runas: root
+  - location: script/verify-service.sh
+    timeout: 60
+    runas: root
+
+  - location: script/resume-scaling.sh
+    timeout: 60
+    runas: root
