@@ -15,31 +15,31 @@ files:
 
 hooks:
   ApplicationStop:
-    - location: Scripts/SuspandedScaling.sh
+    - location: script/SuspandedScaling.sh
       timeout: 60
       runas: root
-    - location: Scripts/EC2EnterStandby.sh
+    - location: script/EC2EnterStandby.sh
       timeout: 180
       runas: root
 
   BeforeInstall:
-    - location: Scripts/StopDaemon.sh
+    - location: script/StopDaemon.sh
       timeout: 180
-    - location: Scripts/EarseApp.sh
+    - location: script/EarseApp.sh
       timeout: 180
 
   AfterInstall:
 
   ApplicationStart:
-    - location: Scripts/StartService.sh
+    - location: script/StartService.sh
       timeout: 300
 
   ValidateService:
-    - location: Scripts/VerfiyService.sh
+    - location: script/VerfiyService.sh
       timeout: 60
-    - location: Scripts/EC2ExitStandby.sh
+    - location: script/EC2ExitStandby.sh
       timeout: 60
       runas: root
-    - location: Scripts/ResumeScaling.sh
+    - location: script/ResumeScaling.sh
       timeout: 60
       runas: root
