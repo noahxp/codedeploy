@@ -2,7 +2,7 @@ sudo: required
 
 language: php
 php:
-  - '7.1.6'
+  - '7.1.7'
 
 # services:
 #   - docker
@@ -13,7 +13,7 @@ branches:
 
 # travis runtime environment from here or settings. : https://docs.travis-ci.com/user/environment-variables/
 env:
-
+  - ZIP_FILE="php-ec2-web-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
 
 # notification - https://docs.travis-ci.com/user/notifications
 # notifications:
@@ -62,12 +62,17 @@ before_install:
 script:
   - echo 'script step...'
 
+before_deploy:
+  - cd "$TRAVIS_BUILD_DIR/src";
+    zip -r ../zip/$ZIP_FILE *
+
+
 deploy:
   - provider: S3
     access_key_id: "$AWS_ACCESS_KEY_ID"
     secret_access_key: "$AWS_SECRET_ACCESS_KEY"
     region: "$AWS_DEFAULT_REGION"
-    local_dir: "$TRAVIS_BUILD_DIR/src"
+    local_dir: "$TRAVIS_BUILD_DIR/zip"
     bucket: "$S3_BUCKET"
     upload-dir: "$S3_FOLDER"
     skip_cleanup: true
@@ -79,7 +84,7 @@ deploy:
     secret_access_key: "$AWS_SECRET_ACCESS_KEY"
     region: "$AWS_DEFAULT_REGION"
     bucket: "$S3_BUCKET"
-    key: "$S3_FOLDER/php-ec2-web-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
+    key: "$S3_FOLDER/$ZIP_FILE"
     bundle_type: zip
     application: "$CODEDEPLOY_APP"
     deployment_group: "$CODEDEPLOY_GROUP"
