@@ -24,12 +24,14 @@ env:
 #     on_success: never # default: change
 #     on_failure: always # default: always
 notifications:
-  email: false
-  slack:
-    rooms:
-      - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}"
-    template:
-      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
+  email:
+    on_failure: always
+    on_success: never
+  # slack:
+  #   rooms:
+  #     - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}"
+  #   template:
+  #     - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
 
 
 cache:
@@ -64,9 +66,9 @@ deploy:
   - provider: S3
     access_key_id: "$AWS_ACCESS_KEY_ID"
     secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$REGION"
+    region: "$AWS_DEFAULT_REGION"
     local_dir: "$TRAVIS_BUILD_DIR/s3"
-    bucket: $S3_BUCKET
+    bucket: "$S3_BUCKET"
     upload-dir: "$S3_FOLDER"
     skip_cleanup: true
     on:
@@ -75,9 +77,9 @@ deploy:
   - provider: codedeploy
     access_key_id: "$AWS_ACCESS_KEY_ID"
     secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$REGION"
+    region: "$AWS_DEFAULT_REGION"
     bucket: "$S3_BUCKET"
-    key: $S3_FOLDER/php-ec2-web-$ENV_NAME-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip
+    key: "$S3_FOLDER/php-ec2-web-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
     bundle_type: zip
     application: "$CODEDEPLOY_APP"
     deployment_group: "$CODEDEPLOY_GROUP"
