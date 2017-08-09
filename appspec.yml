@@ -1,0 +1,45 @@
+version: 0.0
+os: linux
+files:
+  - source: src
+    destination: /var/www/html
+
+# permissions:
+#   - object: /opt/tomcat/bin
+#     pattern: "*.sh"
+#     owner: root
+#     group: root
+#     mode: 755
+#     type:
+#       - file
+
+hooks:
+  ApplicationStop:
+    - location: Scripts/SuspandedScaling.sh
+      timeout: 60
+      runas: root
+    - location: Scripts/EC2EnterStandby.sh
+      timeout: 180
+      runas: root
+
+  BeforeInstall:
+    - location: Scripts/StopDaemon.sh
+      timeout: 180
+    - location: Scripts/EarseApp.sh
+      timeout: 180
+
+  AfterInstall:
+
+  ApplicationStart:
+    - location: Scripts/StartService.sh
+      timeout: 300
+
+  ValidateService:
+    - location: Scripts/VerfiyService.sh
+      timeout: 60
+    - location: Scripts/EC2ExitStandby.sh
+      timeout: 60
+      runas: root
+    - location: Scripts/ResumeScaling.sh
+      timeout: 60
+      runas: root

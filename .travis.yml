@@ -1,0 +1,85 @@
+sudo: required
+
+language: php
+php:
+  - '7.1.6'
+
+# services:
+#   - docker
+
+branches:
+  only:
+    - master
+
+# travis runtime environment from here or settings. : https://docs.travis-ci.com/user/environment-variables/
+env:
+
+
+# notification - https://docs.travis-ci.com/user/notifications
+# notifications:
+#   email:
+#     recipients:
+#       - one@example.com
+#       - other@example.com
+#     on_success: never # default: change
+#     on_failure: always # default: always
+notifications:
+  email: false
+  slack:
+    rooms:
+      - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}"
+    template:
+      - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
+
+
+cache:
+  directories:
+    - $COMPOSER_CACHE_DIR
+    - $HOME/.composer/cache
+
+# build lifecycle - https://docs.travis-ci.com/user/customizing-the-build/
+# (OPTIONAL) Install apt addons
+# (OPTIONAL) Install cache components
+# before_install
+# install
+# before_script
+# script
+# (OPTIONAL) before_cache (for cleaning up cache)
+# after_success or after_failure
+# (OPTIONAL) before_deploy
+# (OPTIONAL) deploy
+# (OPTIONAL) after_deploy
+# after_script
+
+# set -e : when error stop build.
+before_install:
+  - set -e
+
+
+# put testing scripts here
+script:
+  - echo 'script step...'
+
+deploy:
+  - provider: S3
+    access_key_id: "$AWS_ACCESS_KEY_ID"
+    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+    region: "$REGION"
+    local_dir: "$TRAVIS_BUILD_DIR/s3"
+    bucket: $S3_BUCKET
+    upload-dir: "$S3_FOLDER"
+    skip_cleanup: true
+    on:
+      all_branches: true
+
+  - provider: codedeploy
+    access_key_id: "$AWS_ACCESS_KEY_ID"
+    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+    region: "$REGION"
+    bucket: "$S3_BUCKET"
+    key: $S3_FOLDER/php-ec2-web-$ENV_NAME-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip
+    bundle_type: zip
+    application: "$CODEDEPLOY_APP"
+    deployment_group: "$CODEDEPLOY_GROUP"
+    on:
+      all_branches: true
