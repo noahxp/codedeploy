@@ -64,6 +64,7 @@ script:
 
 before_deploy:
   - cd "$TRAVIS_BUILD_DIR/src";
+    mkdir ../zip;
     zip -r ../zip/$ZIP_FILE *
 
 
