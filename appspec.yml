@@ -18,12 +18,12 @@ hooks:
     - location: script/SuspandedScaling.sh
       timeout: 60
       runas: root
-    - location: script/EC2EnterStandby.sh
+    - location: script/EC2Standby.sh
       timeout: 180
       runas: root
 
   BeforeInstall:
-    - location: script/StopDaemon.sh
+    - location: script/StopService.sh
       timeout: 180
     - location: script/EarseApp.sh
       timeout: 180
