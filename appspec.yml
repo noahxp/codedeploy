@@ -28,7 +28,7 @@ hooks:
     - location: script/EarseApp.sh
       timeout: 180
 
-  AfterInstall:
+  # AfterInstall:
 
   ApplicationStart:
     - location: script/StartService.sh
