@@ -35,7 +35,7 @@ hooks:
       timeout: 300
 
   ValidateService:
-    - location: script/VerfiyService.sh
+    - location: script/VerifyService.sh
       timeout: 60
     - location: script/EC2ExitStandby.sh
       timeout: 60
