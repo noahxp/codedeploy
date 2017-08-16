@@ -14,13 +14,13 @@ files:
 #       - file
 
 hooks:
-  ApplicationStop:
-    - location: script/SuspandedScaling.sh
-      timeout: 60
-      runas: root
-    - location: script/EC2Standby.sh
-      timeout: 180
-      runas: root
+  # ApplicationStop:
+  #   - location: script/SuspandedScaling.sh
+  #     timeout: 60
+  #     runas: root
+  #   - location: script/EC2Standby.sh
+  #     timeout: 180
+  #     runas: root
 
   BeforeInstall:
     - location: script/StopService.sh
@@ -37,9 +37,9 @@ hooks:
   ValidateService:
     - location: script/VerifyService.sh
       timeout: 60
-    - location: script/EC2ExitStandby.sh
-      timeout: 60
-      runas: root
-    - location: script/ResumeScaling.sh
-      timeout: 60
-      runas: root
+    # - location: script/EC2ExitStandby.sh
+    #   timeout: 60
+    #   runas: root
+    # - location: script/ResumeScaling.sh
+    #   timeout: 60
+    #   runas: root
