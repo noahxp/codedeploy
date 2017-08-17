@@ -15,23 +15,17 @@ files:
 
 hooks:
   ApplicationStop:
-    - location: script/degreister.sh
+    - location: script/deregister_from_elb.sh
       timeout: 60
       runas: root
-  # ApplicationStop:
-  #   - location: script/SuspandedScaling.sh
-  #     timeout: 60
-  #     runas: root
-  #   - location: script/EC2Standby.sh
-  #     timeout: 180
-  #     runas: root
+    - location: script/stop-service.sh
+      timeout: 180
 
   BeforeInstall:
     # - location: script/install_dependencies
     #   timeout: 300
     #   runas: root
-    - location: script/stop-service.sh
-      timeout: 180
+
     - location: script/earse-application.sh
       timeout: 120
 
@@ -40,13 +34,10 @@ hooks:
   ApplicationStart:
     - location: script/start-service.sh
       timeout: 300
+    - location: script/register_with_elb.sh
+      timeout: 60
+      runas: root
 
   ValidateService:
     - location: script/verify-service.sh
       timeout: 60
-    # - location: script/EC2ExitStandby.sh
-    #   timeout: 60
-    #   runas: root
-    # - location: script/ResumeScaling.sh
-    #   timeout: 60
-    #   runas: root
