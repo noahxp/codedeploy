@@ -1,6 +1,6 @@
 <?php
-echo "v4<br>\n";
-echo gethostname() . "<br>\n";
-echo gethostbyname(gethostname()) . "<br>\n";
-echo "<br><hr>\n";
+echo "v5<br>";
+echo gethostname() . "<br>";
+echo gethostbyname(gethostname()) . "<br>";
+echo "\n";
 ?>
