@@ -29,5 +29,6 @@ if [[ -n $status ]];then
 	echo 'resume scaling may be failure.' $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)
 	exit 1
 else
+	echo 'resume-scaling success.'
 	exit 0
 fi

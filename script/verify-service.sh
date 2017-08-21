@@ -6,8 +6,16 @@ do
 	# result=`curl --max-time 10 -s http://localhost/ | grep -c Hello`
 	status=`sudo /etc/init.d/httpd status |grep -c "running"`
 	if [ $status -eq 1 ];then
-		echo 'service check final. result=' $status
 		break
 	fi
 	sleep 1
 done
+
+
+if [ $status -eq 1 ];then
+	echo 'verify-service success'
+	exit 0
+else
+	echo 'verify-service failure'
+	exit 1
+fi

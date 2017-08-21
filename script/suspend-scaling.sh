@@ -25,10 +25,10 @@ do
 	sleep 1
 done
 
-# suspend failure
 if [[ -z $status ]];then
 	echo 'suspend may be failure.' $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)
 	exit 1
 else
+	echo 'suspend-scaling success.'
 	exit 0
 fi
