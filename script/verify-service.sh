@@ -1,30 +1,13 @@
 #!/bin/sh
 
-GetValue (){
-	 grep $1 | awk -F ":" '{print $2}' | sed -e s/,//g -e s/" "//g -e s/\"//g
-}
-
-ID=`curl http://169.254.169.254/latest/meta-data/instance-id`
-REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | GetValue region`
-
-AutoScalingGroupName=`aws autoscaling describe-auto-scaling-instances --region $REGION --instance-ids $ID | GetValue AutoScalingGroupName`
-
-Result=0
-
-for((i=1 ; i<=300 ; i++))
+status=""
+for number in {1..30}
 do
-	if [ $Result -eq 0 ];then
-		sleep 1
-		# Result=`curl --max-time 10 -s http://localhost/ | grep -c Hello`
-		Result=`sudo /etc/init.d/httpd status |grep -c "running"`
-	else
+	# result=`curl --max-time 10 -s http://localhost/ | grep -c Hello`
+	status=`sudo /etc/init.d/httpd status |grep -c "running"`
+	if [ $status -eq 1 ];then
+		echo 'service check final. result=' $status
 		break
 	fi
+	sleep 1
 done
-
-if [ $Result -eq 0 ];then
-	echo -e "\nAbort! Wait 300 seconds for Verify Service"
-	aws autoscaling exit-standby --region $REGION --instance-ids $ID --auto-scaling-group-name $AutoScalingGroupName
-	aws autoscaling resume-processes --region $REGION --auto-scaling-group-name $AutoScalingGroupName --scaling-processes AlarmNotification
-	exit 1
-fi
