@@ -25,7 +25,7 @@ do
 	sleep 1
 done
 
-if [[ -z $status ]];then
+if [[ -n $status ]];then
 	echo 'resume scaling may be failure.' $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)
 	exit 1
 else
