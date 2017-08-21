@@ -21,6 +21,7 @@ hooks:
 
     - location: script/stop-service.sh
       timeout: 180
+      runas: root
 
   BeforeInstall:
     # - location: script/install_dependencies
@@ -29,16 +30,19 @@ hooks:
 
     - location: script/earse-application.sh
       timeout: 120
+      runas: root
 
   # AfterInstall:
 
   ApplicationStart:
     - location: script/start-service.sh
       timeout: 300
+      runas: root
 
   ValidateService:
     - location: script/verify-service.sh
       timeout: 60
+      runas: root
     - location: script/resume-scaling.sh
       timeout: 60
       runas: root

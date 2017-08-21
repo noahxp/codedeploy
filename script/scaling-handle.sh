@@ -8,7 +8,7 @@ export INSTANCE_ID=$(curl --silent http://169.254.169.254/latest/meta-data/insta
 export REGION=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | grep -i region | awk -F\" '{print $4}')
 export ASGNAME=$(aws autoscaling describe-auto-scaling-instances --region $REGION --instance-ids $INSTANCE_ID | grep -i AutoScalingGroupName | awk -F\" '{print $4}' )
 
-#suspend-processes
+#suspend-scaling
 aws autoscaling suspend-processes --region $REGION --auto-scaling-group-name $ASGNAME --scaling-processes AlarmNotification
 aws autoscaling suspend-processes --region $REGION --auto-scaling-group-name $ASGNAME --scaling-processes ScheduledActions
 
@@ -25,7 +25,6 @@ do
 	sleep 1
 done
 
-# suspend failure
 if [[ -z $status ]];then
 	echo 'suspend may be failure.' $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)
 	exit 1
