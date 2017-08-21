@@ -16,7 +16,7 @@ aws autoscaling resume-processes --region $REGION --auto-scaling-group-name $ASG
 status=""
 for number in {1..30}
 do
-	status=$(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME |grep -i ProcessName|grep -i AlarmNotification)
+	export status=$(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME |grep -i ProcessName|grep -i AlarmNotification)
 	echo $status
 	# -z is when condition null return true , -n is not null reutrn true.
 	if [[ -z $status ]];then
