@@ -15,9 +15,10 @@ files:
 
 hooks:
   ApplicationStop:
-    - location: script/deregister_from_elb.sh
+    - location: script/suspend-scaling.sh
       timeout: 60
       runas: root
+
     - location: script/stop-service.sh
       timeout: 180
 
@@ -34,10 +35,10 @@ hooks:
   ApplicationStart:
     - location: script/start-service.sh
       timeout: 300
-    - location: script/register_with_elb.sh
-      timeout: 60
-      runas: root
 
   ValidateService:
     - location: script/verify-service.sh
       timeout: 60
+    - location: script/resume-scaling.sh
+      timeout: 60
+      runas: root
