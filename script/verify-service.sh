@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 status=""
 for number in {1..30}

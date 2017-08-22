@@ -19,6 +19,10 @@ hooks:
       timeout: 60
       runas: root
 
+    - location: script/deregister-elb.sh
+      timeout: 300
+      runas: root
+
     - location: script/stop-service.sh
       timeout: 180
       runas: root
@@ -43,6 +47,11 @@ hooks:
     - location: script/verify-service.sh
       timeout: 60
       runas: root
+
+    - location: script/register-elb.sh
+      timeout: 300
+      runas: root
+
     - location: script/resume-scaling.sh
       timeout: 60
       runas: root

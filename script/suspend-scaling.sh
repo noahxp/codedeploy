@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # reference : http://docs.aws.amazon.com/autoscaling/latest/userguide/as-suspend-resume-processes.html
 
@@ -13,11 +13,10 @@ aws autoscaling suspend-processes --region $REGION --auto-scaling-group-name $AS
 aws autoscaling suspend-processes --region $REGION --auto-scaling-group-name $ASGNAME --scaling-processes ScheduledActions
 
 
-status=""
+export status=""
 for number in {1..30}
 do
 	export status=$(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME |grep -i ProcessName|grep -i AlarmNotification)
-	echo $status
   # -z is when condition null return true , -n is not null reutrn true.
 	if [[ -n $status ]];then
 		break
@@ -26,9 +25,9 @@ do
 done
 
 if [[ -z $status ]];then
-	echo 'suspend may be failure.' $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)
+	echo "suspend may be failure. $(aws autoscaling describe-auto-scaling-groups --region $REGION --auto-scaling-group-names $ASGNAME)"
 	exit 1
 else
-	echo 'suspend-scaling success.'
+	echo "suspend-scaling success."
 	exit 0
 fi
