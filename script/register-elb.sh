@@ -26,7 +26,7 @@ aws autoscaling exit-standby --region $REGION --instance-ids $INSTANCE_ID --auto
 
 
 export status=""
-for number in {1..300}
+for number in {1..60}
 do
 	export status=$(aws autoscaling describe-auto-scaling-instances --region $REGION --instance-ids $INSTANCE_ID |grep -i LifecycleState |awk -F\" '{print $4}')
 	# -z is when condition null return true , -n is not null reutrn true.
