@@ -1,5 +1,5 @@
 <?php
-echo "v7   <br>";
+echo "v1   <br>";
 echo gethostname() . "   <br>";
 echo gethostbyname(gethostname()) . "   <br>";
 $date = new DateTime('2000-01-01');

@@ -2,18 +2,47 @@ sudo: required
 
 language: php
 php:
-  - '7.1.7'
+- '7.1.9'
 
 # services:
 #   - docker
 
 branches:
   only:
-    - master
+  - master
 
 # travis runtime environment from here or settings. : https://docs.travis-ci.com/user/environment-variables/
 env:
-  - ZIP_FILE="php-ec2-web-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
+  global:
+    - ZIP_FILE="php-web-$TRAVIS_BUILD_NUMBER-$TRAVIS_COMMIT.zip"
+
+    # travis-ci secure doc : https://docs.travis-ci.com/user/encryption-keys/
+    # before install travis , first install ruby & gem
+    # $ gem install travis
+    # $ travis encrypt SOMEVAR="secretvalue"
+
+    # AWS_ACCESS_KEY_ID_DEV
+    - secure: ""
+    # AWS_SECRET_ACCESS_KEY_DEV
+    - secure: ""
+    # AWS_ACCESS_KEY_ID_STG
+    #    - secure: ""
+    # AWS_SECRET_ACCESS_KEY_STG
+    #    - secure: ""
+    # AWS_ACCESS_KEY_ID_PROD , value : AKI....QMQ
+    - secure: "EpseFCEvMzmqxvTrIORSqsstU1oF2GBgvHrJsKn1+vJsW1y/mbf9cf2E+khE4o6bnCq7E+OPxF5QwQUdG6O5EEF3D6QZCfyqsACDGVhjXqjr72EMAVTZNL9n++UT2pExDPeclBnelOs3k6I1Jfk2+6XRj94PZo4hLan6S9szYDm9R7o3rcdjOrDPwXYbxbTRw79f2pbP6xHDU6c3F4iLSiRyE+Np1/z4KgOZ3xir6rNUmpgUafRSQRgos5egDOKSTd/T9hpc/HEYrcV+7kw/ZrHWFpaK4iSORMnt5EA2RQxHNcDilSaNp22jg/iVe7j1+5FCT5DFj2Ec5rLsoxiSRtngx2ukNZSqyEXz2leNP10sXjo8hXNhuOs1TvPN1Pz0N+ay0j1UvpE6XjYC1SwgxHg+v8jVTaKeuH522Q4c/Ax5FTK/R6kOHGuAmtsPeOybCeINSG0qzVSorVp9qouoxXhvGfkRATqoQ4zNMbVpx69wEaAnZmVvdvWwpnu1t1iSSmmEJ8nxHOn6wl6ikA0MB56l3Wgh0dfuhJ076PUulhHghfVchdb1i0LIFyRSI1B0SZCp+wk6Hg+OYTJksJs5zvN8ljbNoRcIqYhNHhR89pFj+n2yFtJHvqwjH74l2XNVZWX/nAqG6J0QlsCL7F8DRorOkg+QDrNgSd0VSpl19jQ="
+    # AWS_SECRET_ACCESS_KEY_PROD
+    - secure: "iLAXXSD/u4fQgQqmCIdTc4xvW02kM/eFIc6igWQndlnXfPI3meOyNbwr4HnULffr2EtPB9pMJvimf2CvD+R7SjAqyVPDMc/o1OCaTcVaXRf0wrz3QSY/WtpTKoduiqZMe4SoGS9oN4CgnqtYOYTZvgC5HUDVtMxIBfRbrhyihwBZJWjE7jKY6gP1VNy55b7i0HgpztHW5MQJyNdHJMEFWJDQGBeI8BxT2wOFqsgcS6d7P3VRm/tj7IPnYDhyuAFSiVoUI4yhmgVdXhRwyqLfFobPHFi4nmf8K5eeWfutXXoEzvbI+BNwFDZeVHmV+A58Ilk8oJJCCJg0GVYKVWnPtgH09om9rAOHosSqWyfeKHiN6fFg+GXUNamYXmvvD3+OIgGEEL2C7OxFDg0wffgjNPtg194JHdx6bidup2mC9fFlepFhtrW9icCL0d03nPuHyrrzeD/L6Q409Bnp6SuKO+sckHZZmORBwoWwRcI1d8UCkJcdrgd3203ed0y1riZJPLqof3Ivfh0Xwfc8T+mcTF5b0nuPibzM3gXZqDkFZ3OdSB4TYDWix8v2L5EYFmUiYpkzSGXgSeCN984/Rq0Ln+niF/8hYNd7tr/HrzlPa/NfQ2kTpgRovy8D5PNUofCRRwjlcehltIw8vo1jAkdN3+s/aSGoh3ZOLtjULu8MdI4="
+
+    # global variables
+    - AWS_ACCESS_KEY_ID=''
+    - AWS_SECRET_ACCESS_KEY=''
+    - AWS_REGION='ap-northeast-1'
+    - S3_BUCKET=''
+    - S3_FOLDER='dev-web-php-travisci'
+    - CODEDEPLOY_APP_NAME=''
+    - CODEDEPLOY_GROUP=''
+
 
 # notification - https://docs.travis-ci.com/user/notifications
 # notifications:
@@ -23,21 +52,22 @@ env:
 #       - other@example.com
 #     on_success: never # default: change
 #     on_failure: always # default: always
+# integration to slack , setup on slack travis-ci app
 notifications:
   email:
     on_failure: always
     on_success: never
-  # slack:
-  #   rooms:
-  #     - ${SLACK_ACCOUNT}:${SLACK_TOKEN}#${SLACK_CHANNEL}"
-  #   template:
-  #     - "Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}"
-
+  slack:
+    rooms:
+      - secure: "oC78n1QG95hlr16V6XY60hrnTNB1fAhMvoiyf6w6LKWQCI+apjwr5TM0iv+QhfUN1vsqLA8JjS6FnFPDR4QrOECshKsWFOQJ/C6E2GJWJ4d5crGoEo/tmYhSUlDutn1NPKzxxXcUtBUkLNtRf0pX1bAsutdBUAeV2N4McY7aOu9iMHsdrHA5lWQEEsMg16RffhEVO/tSaXF89+Za9QDuORSSlQ7Wfgh79SJR+cOrhCayIhXJofrmwJ7bhuWWLLB3KxbHOGSwCcyL7zbKWX8tt/LkNtaoAutmOWAlJbCcZRIu+FAMgIW0RlAKYi9jHXaS+wN2jP5MeGB+h2kC9hTBEWDCMi6IoSKb9P0+f/mrAyWdUnTXYgGy0BaO+Y6V2KYWZIJ5QSOufIWtceoT5odSBmEqu8W37PI3hiLtKBJ5DPE/cicNf/IFhmAFm1rxbTxNVgZ6tMvsjaMPr7XpJJlD0lh0Acjbz9x/xlFPLsma5GDgWDgxGhvpGcAb4/3+OUN9w7ouksFcxdkZ8aqCFbQUkJHr0sgogvcgxlw4DFunzwNaOPY8oa+UfFxw9iISKyn7sokQr+0fFL2SpD5KYpJymuu81nV69NWGFSJhuLbWpe6FaWc4wiAib/W1Gp347bQUlYLeUiinEGqy7Txa2ZA9BznZYJuRydP4MPEMs8Bn8MM="
 
 cache:
   directories:
-    - $COMPOSER_CACHE_DIR
-    - $HOME/.composer/cache
+  - $COMPOSER_CACHE_DIR
+  - $HOME/.composer/cache
+
+
+
 
 # build lifecycle - https://docs.travis-ci.com/user/customizing-the-build/
 # (OPTIONAL) Install apt addons
@@ -56,38 +86,63 @@ cache:
 # set -e : when error stop build.
 before_install:
   - set -e
+  - echo `date +"%Y-%m-%d %H:%M:%S"`
+  - echo $TRAVIS_BRANCH
+  - if [[ $TRAVIS_BRANCH == "dev" ]]; then
+      AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_DEV;
+      AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_DEV;
+      S3_BUCKET='';
+      CODEDEPLOY_APP='';
+      CODEDEPLOY_GROUP='';
+    fi
+  - if [[ $TRAVIS_BRANCH == "staging" ]]; then
+      AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_STG;
+      AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_STG;
+      S3_BUCKET='';
+      CODEDEPLOY_APP='';
+      CODEDEPLOY_GROUP='';
+    fi
+  - if [[ $TRAVIS_BRANCH == "master" ]]; then
+      AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD;
+      AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD;
+      S3_BUCKET='noah-deploy';
+      CODEDEPLOY_APP='demo';
+      CODEDEPLOY_GROUP='lab';
+    fi
 
 
 # put testing scripts here
 script:
-  - echo 'script step...'
+- echo 'script step...'
 
 before_deploy:
-  - cd "$TRAVIS_BUILD_DIR";
-    mkdir "$TRAVIS_BUILD_DIR/zip";
-    zip -r "$TRAVIS_BUILD_DIR/zip/$ZIP_FILE" *
+- cd "$TRAVIS_BUILD_DIR";
+  mkdir "$TRAVIS_BUILD_DIR/zip";
+  zip -r "$TRAVIS_BUILD_DIR/zip/$ZIP_FILE" *
 
 
 deploy:
-  - provider: S3
-    access_key_id: "$AWS_ACCESS_KEY_ID"
-    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$AWS_DEFAULT_REGION"
-    local_dir: "$TRAVIS_BUILD_DIR/zip"
-    bucket: "$S3_BUCKET"
-    upload-dir: "$S3_FOLDER"
-    skip_cleanup: true
-    on:
-      all_branches: true
+- provider: S3
+  access_key_id: &aws_access_key $AWS_ACCESS_KEY_ID
+  secret_access_key: &aws_secret_key
+    secure: $AWS_SECRET_ACCESS_KEY
+  region: $AWS_REGION
+  local_dir: $TRAVIS_BUILD_DIR/zip
+  bucket: $S3_BUCKET
+  upload-dir: $S3_FOLDER
+  skip_cleanup: true
+  on:
+    all_branches: true
 
-  - provider: codedeploy
-    access_key_id: "$AWS_ACCESS_KEY_ID"
-    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
-    region: "$AWS_DEFAULT_REGION"
-    bucket: "$S3_BUCKET"
-    key: "$S3_FOLDER/$ZIP_FILE"
-    bundle_type: zip
-    application: "$CODEDEPLOY_APP"
-    deployment_group: "$CODEDEPLOY_GROUP"
-    on:
-      all_branches: true
+- provider: codedeploy
+  access_key_id: *aws_access_key
+  secret_access_key: *aws_secret_key
+  region: $AWS_REGION
+  bucket: $S3_BUCKET
+  key: $S3_FOLDER/$ZIP_FILE
+  bundle_type: zip
+  application: $CODEDEPLOY_APP
+  deployment_group: $CODEDEPLOY_GROUP
+  wait-until-deployed: true
+  on:
+    all_branches: true
