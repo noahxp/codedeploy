@@ -1,5 +1,5 @@
 #!/bin/bash
-service httpd start
+/bin/systemctl start httpd.service
 sleep 5
 
 

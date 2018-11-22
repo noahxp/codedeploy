@@ -1,5 +1,5 @@
 #!/bin/bash
-service httpd stop
+/bin/systemctl stop httpd.service
 sleep 5
 
 echo 'stop-service success.'
