@@ -100,8 +100,8 @@ before_install:
 - if [[ $TRAVIS_BRANCH == "master" ]]; then
     AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD;
     AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD;
-    S3_BUCKET='afgsfhdyur5joi868682333';
-    CODEDEPLOY_APP='a1-EC2-CodeDeploy';
+    S3_BUCKET='demo-noah-293kewrsghosdrhjiopsdjfghiosdfg';
+    CODEDEPLOY_APP='demo-EC2-CodeDeploy';
     CODEDEPLOY_GROUP='ec2';
   fi
 
