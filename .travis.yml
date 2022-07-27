@@ -1,12 +1,12 @@
-sudo: required
-
 language: php
 php:
 - '7.1.9'
 
 branches:
   only:
-  - master
+    - dev
+    - staging
+    - master
 
 # travis runtime environment from here or settings. : https://docs.travis-ci.com/user/environment-variables/
 env:
@@ -18,19 +18,6 @@ env:
   # $ gem install travis
   # $ travis encrypt SOMEVAR="secretvalue"
 
-  # AWS_ACCESS_KEY_ID_DEV
-  - secure: ""
-  # AWS_SECRET_ACCESS_KEY_DEV
-  - secure: ""
-  # AWS_ACCESS_KEY_ID_STG
-  - secure: ""
-  # AWS_SECRET_ACCESS_KEY_STG
-  - secure: ""
-  # AWS_ACCESS_KEY_ID_PROD , value : AKI....QMQ
-  - secure: "CcLNLCGd0QROQ56KXMAol+x71Ro1TdFMi96an5hszppkdzXyD+BkI03IMNJK3zs8JgxchFdkJmqOt64NhgX5svfc2erNkk0lwikHBuWe++qYwumNTBZi89aM9diSOiVZArZzTFqe1NcJmL2mFhen+RD2U5JP7KTnkUFZnhzlc0fpoYHa9q2Q4s8gCYcj4TDIKo/ZV5bxFoNhEC1VCiHaDt6B9USlwZkrTzJ7RP0/AduiAT09xb5uXk905rJN8DUB9YSo3yxivf/bvcdABopcvkTmmeWhcGu1G0M8o1jVbyc4fu+Cs0Du0zD9varFDPA3SKuhOPgwTXVK+o3A/nbP0+tBrdmtIAwHn+j043uWTaAaUf4ZLsY6T8JDVhEN6Ma/25qCzel1mrSObyeFvZKDTJwh9b8LYPFl9CR7WVCUeQDgVKK3VsDI4vyofLc++tblmdise1QXE/verTbLR4hc1GWXIE2vJR3nLkF+FUf3bosfapqB2xu4wgcWvTyUIfYOgK4RtRD6CNy3IvLEXw2DPeXLQjduB6lgePfJp41la/1Pl75TrRt8dYpQlk7UCL+CGJJv/JRxOzGE17/m2N9WIaC60ws8p8ihcd+ie4EaRZxf67iqlgIU3T58VSh6VFNo+EnB9WUFsjbLlbKqeyW7y047Z1HOQ9rmyEwKuJaoWXM="
-  # AWS_SECRET_ACCESS_KEY_PROD
-  - secure: "VqzIpk0cC8jqirfmBZYum9Zzu8lj9EuHSHOPoZ8rRyJLKqJMpyVZ0LaPF2Yewp/UjDghi+9478Ddh5pb6HqDtA2mD2KBH3ci7sBnpzaX/8Q3LzRqZpRjgWCyS+1g1ue8gzh2NPVVTRsIg376QaRZv4SbffFVngkiWGpXTW5m46CgpTaJtRHkkkgJ/PFwkGUnlAdGiCiryRe/ydfh057wDezH3DqonM3CKGRtE2x9Zzs3cAvVN/NukerbtwtqtOyrOgTu3ukRXZxyMYcfteVuVh/iIXxonhd2ru0B33oPSK06+4I117ENd2GK/pmT6AnI6Z/LyGUyIDN3TklXpVD6fq0UTob8fYwECw/rHF5GYlUXbbuS6wLlMzQ/R9MMfIuIEJZ/o/g+jUbOCvR4hLT8kkaFllCnBrN9OEv7wVYUrKLqfrpVEhXTQyn60kIb8ONc4rLLXRV9mInZ1SfoaFUsq0FzE6Fzfy6KLUQD5q2WMsJWr/xPlf/jniwhNLHVWbT0FCPaRk+MDooY43fqKwl/5cA83YAViLSOLPNqfWckailaw+uMYPeSm9M/4LbRakc2LNIjZlfhv7ycPbuR9G4/awbM5icBcJxYN39KANGBa1d1fRCZdb/ttzxttUEzDkkA7k//04Jt1+CTlOPO7tivwP1wys48/ogaIjER/EmveKM="
-
   # global variables
   - AWS_ACCESS_KEY_ID=''
   - AWS_SECRET_ACCESS_KEY=''
@@ -40,14 +27,6 @@ env:
 
 
 # notification - https://docs.travis-ci.com/user/notifications
-# notifications:
-#   email:
-#     recipients:
-#       - one@example.com
-#       - other@example.com
-#     on_success: never # default: change
-#     on_failure: always # default: always
-# integration to slack , setup on slack travis-ci app
 notifications:
   email:
     on_failure: always
@@ -62,23 +41,7 @@ cache:
   - $HOME/.composer/cache
 
 
-
-
 # build lifecycle - https://docs.travis-ci.com/user/customizing-the-build/
-# (OPTIONAL) Install apt addons
-# (OPTIONAL) Install cache components
-# before_install
-# install
-# before_script
-# script
-# (OPTIONAL) before_cache (for cleaning up cache)
-# after_success or after_failure
-# (OPTIONAL) before_deploy
-# (OPTIONAL) deploy
-# (OPTIONAL) after_deploy
-# after_script
-
-# set -e : when error stop build.
 before_install:
 - set -e
 - echo `date +"%Y-%m-%d %H:%M:%S"`
@@ -86,9 +49,9 @@ before_install:
 - if [[ $TRAVIS_BRANCH == "dev" ]]; then
     AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_DEV;
     AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_DEV;
-    S3_BUCKET='';
-    CODEDEPLOY_APP='';
-    CODEDEPLOY_GROUP='';
+    S3_BUCKET='codedeploy-idc-104aws-lab-dev';
+    CODEDEPLOY_APP='idc-104aws-lab';
+    CODEDEPLOY_GROUP='dev';
   fi
 - if [[ $TRAVIS_BRANCH == "staging" ]]; then
     AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_STG;
@@ -100,17 +63,18 @@ before_install:
 - if [[ $TRAVIS_BRANCH == "master" ]]; then
     AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD;
     AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD;
-    S3_BUCKET='demo-noah-293kewrsghosdrhjiopsdjfghiosdfg';
-    CODEDEPLOY_APP='demo-EC2-CodeDeploy';
-    CODEDEPLOY_GROUP='ec2';
+    S3_BUCKET='';
+    CODEDEPLOY_APP='';
+    CODEDEPLOY_GROUP='';
   fi
 
 
-# put testing scripts here
-script:
-- echo 'script step...'
+install:
+- echo 'Install the travis-ci necessary package, likes the gradle.'
 
-before_deploy:
+
+script:
+- echo 'main build script step...'
 - cd "$TRAVIS_BUILD_DIR";
   mkdir "$TRAVIS_BUILD_DIR/zip";
   zip -r "$TRAVIS_BUILD_DIR/zip/$ZIP_FILE" *
